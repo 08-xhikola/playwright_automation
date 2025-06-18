@@ -1,0 +1,6 @@
+node_modules
+.env
+videos/*.webm
+reports/*.html
+reports/*.json
+screenshots/*

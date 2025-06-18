@@ -1,0 +1,32 @@
+{
+  "name": "playwright_automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+   "test": "cucumber-js --require-module ts-node/register --require features/step_definitions/*.ts --require src/support/*.ts --format json:reports/report.json",
+  "report": "node scripts/generate_report.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/08-xhikola/playwright_automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/08-xhikola/playwright_automation/issues"
+  },
+  "homepage": "https://github.com/08-xhikola/playwright_automation#readme",
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.3.0",
+    "@types/node": "^24.0.3",
+    "cucumber-html-reporter": "^7.2.0",
+    "playwright": "^1.53.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
+  }
+}
