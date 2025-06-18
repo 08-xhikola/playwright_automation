@@ -28,7 +28,7 @@ A modern E2E test automation setup using:
 npm install
 
 2. Run tests
-```bash
+bash
 npm test
 
 3. Generate HTML report
