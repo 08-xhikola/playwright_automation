@@ -6,6 +6,7 @@ export class ShiftPage {
   async goToShiftsSection() {
     await this.page.click('text=Kapazitätsplanung');
     await this.page.click('text=Schichten');
+    await this.page.waitForSelector('.b-sch-event-content', { timeout: 10000 });
   }
 
   async createShift(title: string, start: string, end: string) {
@@ -32,17 +33,14 @@ export class ShiftPage {
 
   async waitForShiftTile(start: string, end: string, duration: string) {
     const label = `${start}-${end} ${duration}`;
-    await this.page.waitForSelector(
-      `div[class*='b-sch-event b-sch-event-resizable-false'][role$='presentation']:has-text("${label}")`,
-      { timeout: 10000 }
-    );
+    await this.page.waitForSelector(`.b-sch-event-content:has-text("${label}")`, {
+      timeout: 15000
+    });
   }
 
   getShiftTile(start: string, end: string, duration: string): Locator {
     const label = `${start}-${end} ${duration}`;
-    return this.page.locator(
-      `div[class*='b-sch-event b-sch-event-resizable-false'][role$='presentation']:has-text("${label}")`
-    );
+    return this.page.locator(`.b-sch-event-content:has-text("${label}")`);
   }
 
   async openShift(start: string, end: string, duration: string) {
@@ -51,7 +49,7 @@ export class ShiftPage {
     await tile.locator('[data-testid="IconButton.open"]').click();
   }
 
-  async updateShiftTitle(start: string, end: string, duration: string, newTitle: string) {
+  async updateShift(start: string, end: string, duration: string, newTitle: string) {
     await this.openShift(start, end, duration);
     await this.page.getByLabel('Titel').fill(newTitle);
     await this.saveShift(start, end, duration);
@@ -62,7 +60,7 @@ export class ShiftPage {
     await this.page.getByRole('button', { name: 'Löschen' }).click();
     await this.page.getByRole('button', { name: 'Confirm' }).click();
     await this.page.waitForSelector(
-      `div[class*='b-sch-event b-sch-event-resizable-false'][role$='presentation']:has-text("${start}-${end} ${duration}")`,
+      `.b-sch-event-content:has-text("${start}-${end} ${duration}")`,
       { state: 'detached', timeout: 10000 }
     );
   }
