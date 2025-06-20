@@ -2,13 +2,13 @@ import { Before, After } from '@cucumber/cucumber';
 import { World } from './world';
 import fs from 'fs';
 import path from 'path';
+import { LoginPage } from '../../tests/page_objects/LoginPage';
 
 const videoDir = 'videos';
 const screenshotDir = 'screenshots';
 let cleaned = false;
 let screenshotIndex = 0;
 
-// Clean videos folder once before all tests
 function cleanVideosOnce() {
   if (!cleaned) {
     if (fs.existsSync(videoDir)) fs.rmSync(videoDir, { recursive: true, force: true });
@@ -20,12 +20,17 @@ function cleanVideosOnce() {
 Before(async function (this: World) {
   cleanVideosOnce();
   await this.init();
+
+  // 🔐 Perform login before every scenario
+  const loginPage = new LoginPage(this.page);
+  await this.page.goto(process.env.DEMO_URL!); // or hardcoded URL
+  await loginPage.fillCredentials(process.env.DEMO_USERNAME!, process.env.PASSWORD!);
+  await loginPage.clickLoginButton();
 });
 
 After(async function (this: World, { pickle, result }) {
   const scenarioName = pickle.name.replace(/\s+/g, '_');
 
-  // 📸 Screenshot on failure
   if (result?.status === 'FAILED' && this.page) {
     fs.mkdirSync(screenshotDir, { recursive: true });
     const screenshotPath = path.join(screenshotDir, `${scenarioName}_${screenshotIndex++}.png`);
@@ -34,14 +39,11 @@ After(async function (this: World, { pickle, result }) {
     this.attach(screenshot, 'image/png');
   }
 
-  // 🎥 Attach video path to report
-  if (this.page) {
-    const video = this.page.video();
-    if (video) {
-      const videoPath = await video.path();
-      if (fs.existsSync(videoPath)) {
-        this.attach(`Video saved at: ${videoPath}`, 'text/plain');
-      }
+  const video = this.page?.video?.();
+  if (video) {
+    const videoPath = await video.path();
+    if (fs.existsSync(videoPath)) {
+      this.attach(`Video saved at: ${videoPath}`, 'text/plain');
     }
   }
 
