@@ -24,7 +24,7 @@ When('I assign employee {string} and save shift from {string} to {string} with d
 });
 
 Then('the shift from {string} to {string} with duration {string} should be visible', async function (this: World, start, end, duration) {
-  const tile = shiftPage.getShiftTile(start, end, duration);
+  const tile = shiftPage.getLatestShiftTile(start, end, duration);
   await expect(tile).toBeVisible();
 });
 
@@ -32,11 +32,11 @@ When('I update the shift from {string} to {string} with duration {string} to tit
   await shiftPage.updateShift(start, end, duration, newTitle);
 });
 
-When('I delete the shift from {string} to {string} with duration {string}', async function (this: World, start, end, duration) {
-  await shiftPage.deleteShift(start, end, duration);
+When('I delete the shift titled {string}', async function (this: World, title) {
+  await shiftPage.deleteShift(title);
 });
 
 Then('the shift from {string} to {string} with duration {string} should not be visible', async function (this: World, start, end, duration) {
-  const tile = shiftPage.getShiftTile(start, end, duration);
-  await expect(tile).toHaveCount(0);
+  const tile = this.page.locator(`.b-sch-event-content:has-text("${start}-${end} ${duration}")`);
+  await expect(tile).toHaveCount(0, { timeout: 15000 });
 });

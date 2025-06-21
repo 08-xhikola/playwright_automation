@@ -1,4 +1,5 @@
 import { Page, Locator } from 'playwright';
+import { expect } from 'playwright/test';
 
 export class ShiftPage {
   constructor(private page: Page) {}
@@ -33,20 +34,22 @@ export class ShiftPage {
 
   async waitForShiftTile(start: string, end: string, duration: string) {
     const label = `${start}-${end} ${duration}`;
-    await this.page.waitForSelector(`.b-sch-event-content:has-text("${label}")`, {
-      timeout: 15000
-    });
+    await this.page.locator(`.b-sch-event-content:has-text("${label}")`).last()
+      .waitFor({ state: 'visible', timeout: 15000 });
   }
 
-  getShiftTile(start: string, end: string, duration: string): Locator {
+  getLatestShiftTile(start: string, end: string, duration: string): Locator {
     const label = `${start}-${end} ${duration}`;
-    return this.page.locator(`.b-sch-event-content:has-text("${label}")`);
+    return this.page.locator(`.b-sch-event-content:has-text("${label}")`).last();
   }
 
   async openShift(start: string, end: string, duration: string) {
-    const tile = this.getShiftTile(start, end, duration);
-    await tile.waitFor({ state: 'visible', timeout: 10000 });
-    await tile.locator('[data-testid="IconButton.open"]').click();
+    const label = `${start}-${end} ${duration}`;
+    const tile = this.getLatestShiftTile(start, end, duration);
+    await tile.click();
+    //await this.page.locator(`.b-sch-event:has(.b-sch-event-content:has-text("${label}"))`).last().click()
+      await this.page.locator('button[data-testid="IconButton.open"]').click();
+    await this.page.getByLabel('Titel').waitFor({ state: 'visible', timeout: 10000 });
   }
 
   async updateShift(start: string, end: string, duration: string, newTitle: string) {
@@ -55,13 +58,18 @@ export class ShiftPage {
     await this.saveShift(start, end, duration);
   }
 
-  async deleteShift(start: string, end: string, duration: string) {
-    await this.openShift(start, end, duration);
-    await this.page.getByRole('button', { name: 'Löschen' }).click();
-    await this.page.getByRole('button', { name: 'Confirm' }).click();
-    await this.page.waitForSelector(
-      `.b-sch-event-content:has-text("${start}-${end} ${duration}")`,
-      { state: 'detached', timeout: 10000 }
-    );
-  }
+async deleteShift(title: string) {
+  const lastTile = this.page.locator(`.b-sch-event-content:has-text("${title}")`).last();
+  await lastTile.click({ timeout: 10000 });
+  await this.page.locator(`div.row--dense .col:has-text("${title}")`).waitFor({ state: 'visible', timeout: 10000 });
+  const parentEvent = lastTile.locator('..');
+  const openButton = parentEvent.locator('button[data-testid="IconButton.open"]');
+  await openButton.click({ timeout: 10000 });
+  await this.page.getByRole('button', { name: 'Löschen' }).click();
+  await expect(
+    this.page.locator(`.b-sch-event-content:has-text("${title}")`).last()
+  ).toHaveCount(0, { timeout: 15000 });
+}
+
+
 }

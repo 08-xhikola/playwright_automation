@@ -1,4 +1,4 @@
-Feature: Manage shifts under Capacity Planning
+Feature: Shift Management
 
   Scenario: Create a shift with duration and employee
     Given I navigate to the Shifts section
@@ -14,5 +14,5 @@ Feature: Manage shifts under Capacity Planning
 
   Scenario: Delete the shift
     Given I navigate to the Shifts section
-    When I delete the shift from "11:00" to "19:00" with duration "Spät-Schicht"
+    When I delete the shift titled "Updated Shift"
     Then the shift from "11:00" to "19:00" with duration "Spät-Schicht" should not be visible
