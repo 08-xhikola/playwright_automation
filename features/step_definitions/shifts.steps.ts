@@ -12,6 +12,7 @@ Given('I navigate to the Shifts section', async function (this: World) {
 
 When('I create a new shift with title {string} from {string} to {string}', async function (this: World, title, start, end) {
   await shiftPage.createShift(title, start, end);
+
 });
 
 When('I select duration {string}', async function (this: World, duration) {
@@ -30,11 +31,15 @@ Then('the shift from {string} to {string} with duration {string} should be visib
 
 When('I update the shift from {string} to {string} with duration {string} to title {string}', async function (this: World, start, end, duration, newTitle) {
   await shiftPage.updateShift(start, end, duration, newTitle);
+
 });
 
-When('I delete the shift titled {string}', async function (this: World, title) {
-  await shiftPage.deleteShift(title);
+When('I delete the shift from {string} to {string} with duration {string}', async function (this: World, start, end, duration) {
+  await shiftPage.deleteShift(start, end, duration);
+
 });
+
+
 
 Then('the shift from {string} to {string} with duration {string} should not be visible', async function (this: World, start, end, duration) {
   const tile = this.page.locator(`.b-sch-event-content:has-text("${start}-${end} ${duration}")`);

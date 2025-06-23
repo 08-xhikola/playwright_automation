@@ -58,17 +58,25 @@ export class ShiftPage {
     await this.saveShift(start, end, duration);
   }
 
-async deleteShift(title: string) {
-  const lastTile = this.page.locator(`.b-sch-event-content:has-text("${title}")`).last();
-  await lastTile.click({ timeout: 10000 });
-  await this.page.locator(`div.row--dense .col:has-text("${title}")`).waitFor({ state: 'visible', timeout: 10000 });
-  const parentEvent = lastTile.locator('..');
-  const openButton = parentEvent.locator('button[data-testid="IconButton.open"]');
-  await openButton.click({ timeout: 10000 });
+  async openShiftByTitle(title: string) {
+  const tile = this.page.locator(`.b-sch-event-content:has-text("${title}")`).last();
+  await tile.waitFor({ state: 'visible', timeout: 10000 });
+  await tile.click();
+  await this.page.locator('button[data-testid="IconButton.open"]').click();
+  await this.page.getByLabel('Titel').waitFor({ state: 'visible', timeout: 10000 });
+}
+
+
+async deleteShift(start: string, end: string, duration: string) {
+  const label = `${start}-${end} ${duration}`;
+  const tile = this.getLatestShiftTile(start, end, duration);
+  await tile.waitFor({ state: 'visible', timeout: 10000 });
+  await tile.click();
+
+  await this.page.locator('button[data-testid="IconButton.open"]').click();
   await this.page.getByRole('button', { name: 'Löschen' }).click();
-  await expect(
-    this.page.locator(`.b-sch-event-content:has-text("${title}")`).last()
-  ).toHaveCount(0, { timeout: 15000 });
+
+  await expect(this.page.locator(`.b-sch-event-content:has-text("${label}")`).last()).toHaveCount(0, { timeout: 15000 });
 }
 
 

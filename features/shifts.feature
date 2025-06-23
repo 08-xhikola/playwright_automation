@@ -13,6 +13,6 @@ Feature: Shift Management
     Then the shift from "11:00" to "19:00" with duration "Spät-Schicht" should be visible
 
   Scenario: Delete the shift
-    Given I navigate to the Shifts section
-    When I delete the shift titled "Updated Shift"
-    Then the shift from "11:00" to "19:00" with duration "Spät-Schicht" should not be visible
+  Given I navigate to the Shifts section
+  When I delete the shift from "11:00" to "19:00" with duration "Updated Shift"
+  Then the shift from "11:00" to "19:00" with duration "Spät-Schicht" should not be visible
