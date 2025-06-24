@@ -2,8 +2,7 @@ name: Run Playwright Cucumber Tests Every 10 Minutes
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  
-#   workflow_dispatch:        
+    - cron: '*/10 * * * *'  # Runs every 10 minutes UTC
 
 jobs:
   test:
@@ -29,7 +28,7 @@ jobs:
 
       - name: Upload test results (optional)
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-artifacts
           path: |
