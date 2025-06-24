@@ -12,7 +12,6 @@ Given('I navigate to the Shifts section', async function (this: World) {
 
 When('I create a new shift with title {string} from {string} to {string}', async function (this: World, title, start, end) {
   await shiftPage.createShift(title, start, end);
-
 });
 
 When('I select duration {string}', async function (this: World, duration) {
@@ -31,17 +30,27 @@ Then('the shift from {string} to {string} with duration {string} should be visib
 
 When('I update the shift from {string} to {string} with duration {string} to title {string}', async function (this: World, start, end, duration, newTitle) {
   await shiftPage.updateShift(start, end, duration, newTitle);
-
 });
 
 When('I delete the shift from {string} to {string} with duration {string}', async function (this: World, start, end, duration) {
   await shiftPage.deleteShift(start, end, duration);
-
 });
 
+Then('the shift from {string} to {string} with duration {string} should exist in the UI', async function (this: World, start, end, duration) {
+  await shiftPage.verifyShiftExistsInUI(start, end, duration);
+});
 
+Then('the shift from {string} to {string} with duration {string} should not exist in the UI', async function (this: World, start, end, duration) {
+  await shiftPage.verifyShiftDoesNotExistInUI(start, end, duration);
+});
 
-Then('the shift from {string} to {string} with duration {string} should not be visible', async function (this: World, start, end, duration) {
-  const tile = this.page.locator(`.b-sch-event-content:has-text("${start}-${end} ${duration}")`);
-  await expect(tile).toHaveCount(0, { timeout: 15000 });
+When('I assign employee {string} and try to save shift from {string} to {string} with duration {string}', async function (this: World, employee, start, end, duration) {
+  await shiftPage.selectEmployee(employee);
+  await shiftPage.tryToSaveInvalidShift();
+});
+
+Then('an error message {string} should be visible', async function (this: World, expectedMessage) {
+  const errorText = await shiftPage.getErrorToastText();
+  console.log('✉️ Actual error text received:', errorText);
+  expect(errorText).toContain(expectedMessage);
 });

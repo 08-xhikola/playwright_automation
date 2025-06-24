@@ -1,5 +1,4 @@
-import { Page, Locator } from 'playwright';
-import { expect } from 'playwright/test';
+import { Page, Locator, expect } from 'playwright/test';
 
 export class ShiftPage {
   constructor(private page: Page) {}
@@ -29,6 +28,7 @@ export class ShiftPage {
 
   async saveShift(start: string, end: string, duration: string) {
     await this.page.getByRole('button', { name: 'Speichern' }).click();
+    await this.refresh();
     await this.waitForShiftTile(start, end, duration);
   }
 
@@ -44,40 +44,60 @@ export class ShiftPage {
   }
 
   async openShift(start: string, end: string, duration: string) {
-    const label = `${start}-${end} ${duration}`;
     const tile = this.getLatestShiftTile(start, end, duration);
     await tile.click();
-    //await this.page.locator(`.b-sch-event:has(.b-sch-event-content:has-text("${label}"))`).last().click()
-      await this.page.locator('button[data-testid="IconButton.open"]').click();
+    await this.page.locator('button[data-testid="IconButton.open"]').click();
     await this.page.getByLabel('Titel').waitFor({ state: 'visible', timeout: 10000 });
   }
 
-  async updateShift(start: string, end: string, duration: string, newTitle: string) {
-    await this.openShift(start, end, duration);
+  async updateShift(start: string, end: string, oldDuration: string, newTitle: string) {
+    await this.openShift(start, end, oldDuration);
     await this.page.getByLabel('Titel').fill(newTitle);
-    await this.saveShift(start, end, duration);
+    await this.page.getByRole('button', { name: 'Speichern' }).click();
+    await this.refresh();
+    const label = `${start}-${end} ${newTitle}`;
+    await this.page.locator(`.b-sch-event-content:has-text("${label}")`).last()
+      .waitFor({ state: 'visible', timeout: 15000 });
   }
 
-  async openShiftByTitle(title: string) {
-  const tile = this.page.locator(`.b-sch-event-content:has-text("${title}")`).last();
-  await tile.waitFor({ state: 'visible', timeout: 10000 });
-  await tile.click();
-  await this.page.locator('button[data-testid="IconButton.open"]').click();
-  await this.page.getByLabel('Titel').waitFor({ state: 'visible', timeout: 10000 });
+  async deleteShift(start: string, end: string, duration: string) {
+    const label = `${start}-${end} ${duration}`;
+    const tile = this.getLatestShiftTile(start, end, duration);
+    await tile.waitFor({ state: 'visible', timeout: 10000 });
+    await tile.click();
+    await this.page.locator('button[data-testid="IconButton.open"]').click();
+    await this.page.getByRole('button', { name: 'Löschen' }).click();
+    await this.page.waitForTimeout(1000); 
+    await this.refresh();
+    await expect(this.page.locator(`.b-sch-event-content:has-text("${label}")`).last())
+      .toHaveCount(0, { timeout: 15000 });
+  }
+
+  async refresh() {
+    await this.page.reload();
+    await this.page.waitForSelector('.b-sch-event-content', { timeout: 10000 });
+  }
+
+  async verifyShiftExistsInUI(start: string, end: string, duration: string) {
+    await this.refresh();
+    const tile = this.page.locator(`.b-sch-event-content:has-text("${start}-${end} ${duration}")`);
+    await expect(tile).toHaveCount(1, { timeout: 10000 });
+  }
+
+  async verifyShiftDoesNotExistInUI(start: string, end: string, duration: string) {
+    await this.refresh();
+    const tile = this.page.locator(`.b-sch-event-content:has-text("${start}-${end} ${duration}")`);
+    await expect(tile).toHaveCount(0, { timeout: 10000 });
+  }
+
+  async tryToSaveInvalidShift() {
+  await this.page.getByRole('button', { name: 'Speichern' }).click();
 }
 
-
-async deleteShift(start: string, end: string, duration: string) {
-  const label = `${start}-${end} ${duration}`;
-  const tile = this.getLatestShiftTile(start, end, duration);
-  await tile.waitFor({ state: 'visible', timeout: 10000 });
-  await tile.click();
-
-  await this.page.locator('button[data-testid="IconButton.open"]').click();
-  await this.page.getByRole('button', { name: 'Löschen' }).click();
-
-  await expect(this.page.locator(`.b-sch-event-content:has-text("${label}")`).last()).toHaveCount(0, { timeout: 15000 });
+async getErrorToastText(): Promise<string> {
+  const toast = this.page.locator('.v-snack__wrapper.error .v-snack__content');
+  await toast.waitFor({ state: 'visible', timeout: 5000 });
+  return toast.innerText();
 }
-
 
 }
