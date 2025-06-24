@@ -1,7 +1,7 @@
 import { Page } from 'playwright/test';
 
 export class LoginPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   async fillCredentials(username: string, password: string) {
     if (!username || !password) {

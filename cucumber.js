@@ -2,7 +2,7 @@ module.exports = {
   default: {
     require: [
       "features/step_definitions/**/*.ts",
-      "features/support/**/*.ts", // Include this to load hooks and world
+      "features/support/**/*.ts",
     ],
     format: ["progress"],
     paths: ["features/**/*.feature"],

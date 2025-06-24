@@ -18,7 +18,7 @@ Given('I am on the login page', async function (this: World) {
 
   const url = 'https://werkstattplanung.net/demo/api/kic/da/index.html#/';
   console.log(`🌐 Navigating to: ${url}`);
-  
+
   await this.page.goto(url, { waitUntil: 'domcontentloaded' });
 
   loginPage = new LoginPage(this.page);

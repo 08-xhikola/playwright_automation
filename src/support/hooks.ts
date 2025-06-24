@@ -21,9 +21,8 @@ Before(async function (this: World) {
   cleanVideosOnce();
   await this.init();
 
-  // 🔐 Perform login before every scenario
   const loginPage = new LoginPage(this.page);
-  await this.page.goto(process.env.DEMO_URL!); // or hardcoded URL
+  await this.page.goto(process.env.DEMO_URL!);
   await loginPage.fillCredentials(process.env.DEMO_USERNAME!, process.env.PASSWORD!);
   await loginPage.clickLoginButton();
 });

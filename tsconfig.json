@@ -9,5 +9,9 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["features", "src", "tests"]
+  "include": [
+    "features",
+    "src",
+    "tests"
+  ]
 }
