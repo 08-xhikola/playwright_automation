@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
    "test": "cucumber-js --require-module ts-node/register --require features/step_definitions/*.ts --require src/support/*.ts --format json:reports/report.json",
-     "test:e2e": "cucumber-js --require-module ts-node/register --require features/step_definitions/*.feature --require src/support/*.ts --format json:reports/report.json",
+  "test:e2e": "cucumber-js features/*.feature --require-module ts-node/register --require features/step_definitions/**/*.ts --require src/support/**/*.ts --format json:reports/report.json",
 
    "report": "node scripts/generate_report.js"
   },
