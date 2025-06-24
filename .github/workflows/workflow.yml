@@ -27,11 +27,4 @@ jobs:
       - name: Run Cucumber feature tests
         run: npm run test
 
-      - name: Upload test results (optional)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-artifacts
-          path: |
-            test-results/
-            videos/
+      
