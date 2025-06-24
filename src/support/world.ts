@@ -11,7 +11,12 @@ export class World extends CucumberWorld {
   }
 
   async init() {
-    this.browser = await chromium.launch({ headless: false });
+    const isCI = !!process.env.CI;
+
+    this.browser = await chromium.launch({
+      headless: isCI,
+    });
+
     this.context = await this.browser.newContext({
       viewport: { width: 1280, height: 720 },
       recordVideo: {
@@ -19,6 +24,7 @@ export class World extends CucumberWorld {
         size: { width: 1280, height: 720 }
       }
     });
+
     this.page = await this.context.newPage();
   }
 
