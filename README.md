@@ -38,18 +38,37 @@ This will open reports/report.html in your browser.
 📁 Folder Structure
 
 playwright_automation/
+├── .env
+├── .github/
+│ └── workflows/
+│ └── e2e.yml
+├── .gitignore
+├── cucumber.js
+├── cucumber.tsconfig.json
 ├── features/
-│   ├── step_definitions/
-│   ├── support/
-│   └── *.feature
-├── scripts/
-│   └── generate-report.js
-├── screenshots/
-├── videos/
-├── reports/
+│ ├── shifts.feature
+│ └── step_definitions/
+│ ├── login.steps.ts
+│ └── shifts.steps.ts
+├── package-lock.json
 ├── package.json
+├── README.md
+├── reports/
+│ ├── report.html
+│ └── report.json
+├── screenshots/
+├── scripts/
+│ └── generate_report.js
+├── src/
+│ └── support/
+│ ├── hooks.ts
+│ └── world.ts
+├── tests/
+│ └── page_objects/
+│ ├── LoginPage.ts
+│ └── ShiftsPage.ts
 ├── tsconfig.json
-└── README.md
+└── videos/
 
 🧪 Sample Feature
 Feature: Login
