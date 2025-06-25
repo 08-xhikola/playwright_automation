@@ -1,4 +1,3 @@
-
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,16 +15,22 @@ Given('I am on the login page', async function (this: World) {
     throw new Error('🚨 this.page is undefined — make sure your Before hook initializes it.');
   }
 
-  const url = 'https://werkstattplanung.net/demo/api/kic/da/index.html#/';
-  console.log(`🌐 Navigating to: ${url}`);
+  const url = process.env.DEMO_URL;
+  if (!url) throw new Error('🌐 DEMO_URL not found in environment variables.');
 
+  console.log(`🌐 Navigating to: ${url}`);
   await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+  await this.page.waitForLoadState('domcontentloaded');
 
   loginPage = new LoginPage(this.page);
 });
 
 When('I fill in valid username and password', async function () {
-  await loginPage.fillCredentials(process.env.DEMO_USERNAME!, process.env.PASSWORD!);
+  if (!process.env.DEMO_USERNAME || !process.env.PASSWORD) {
+    throw new Error('🚨 DEMO_USERNAME or PASSWORD not set in environment variables.');
+  }
+
+  await loginPage.fillCredentials(process.env.DEMO_USERNAME, process.env.PASSWORD);
 });
 
 When('I check the stay signed in checkbox', async function () {
@@ -44,5 +49,3 @@ Then('I should be redirected to the dashboard', async function (this: World) {
   const response = await responsePromise;
   expect(response.status()).toBe(200);
 });
-
-
