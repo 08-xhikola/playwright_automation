@@ -11,11 +11,10 @@ export class World extends CucumberWorld {
   }
 
   async init() {
-    const isCI = !!process.env.CI;
-
     this.browser = await chromium.launch({
-      headless: isCI,
-    });
+  headless: process.env.CI === 'true' ? true : false
+});
+
 
     this.context = await this.browser.newContext({
       viewport: { width: 1280, height: 720 },
